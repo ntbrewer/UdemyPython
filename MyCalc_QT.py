@@ -14,36 +14,55 @@ class CalcButtons:
         self.button.clicked.connect(call)
 
     def plus(self):
-        global total
-        text = float(total.text()) + 1
-        total.setText(str(text))
+        global display
+        global new_input
+        new_input = new_input + "+"
+        display.setText(new_input)
 
     def minus(self):
-        global total
-        text = float(total.text()) - 1
-        total.setText(str(text))
+        global display
+        global new_input
+        new_input = new_input + "-"
+        display.setText(new_input)
 
     def mult(self):
-        global total
-        text = float(total.text()) * 2
-        total.setText(str(text))
+        global display
+        global new_input
+        new_input = new_input + "*"
+        display.setText(new_input)
 
     def div(self):
-        global total
-        text = float(total.text()) / 2
-        total.setText(str(text))
+        global display
+        global new_input
+        new_input = new_input + "/"
+        display.setText(new_input)
 
-    def clear(self):
+    def clear():
         global total
+        global display
+        global new_input
+        new_input = "0"
         total.setText("0")
+        display.setText("0")
+
+    def bksp():
+        global display
+        global new_input
+        new_input = new_input[:-1]
+        display.setText(new_input)
 
     def equals(self):
         global total
         global display
+        global new_input
+        new_input = total.text()
         display.setText(total.text())
 
-    def no(self):
-        pass
+    def point(self):
+        global display
+        global new_input
+        new_input = new_input + "."
+        display.setText(new_input)
 
 class PadButtons:
 
@@ -51,12 +70,20 @@ class PadButtons:
         self.button = QPushButton(" " + symbol + " ")
         self.button.clicked.connect(call)
 
+    def eval():
+        global display
+        display.setText(new_input)
+        try:
+            total.setText(str(eval(new_input)))
+        except SyntaxError:
+            print('SyntaxError with',new_input)
+            CalcButtons.bksp()
+
     def zero(self):
         global new_input
-        global display
         if new_input != "0":
             new_input = new_input + "0"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def one(self):
         global new_input
@@ -64,7 +91,7 @@ class PadButtons:
             new_input = new_input + "1"
         else:
             new_input = "1"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def two(self):
         global new_input
@@ -72,7 +99,7 @@ class PadButtons:
             new_input = new_input + "2"
         else:
             new_input = "2"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def three(self):
         global new_input
@@ -80,7 +107,7 @@ class PadButtons:
             new_input = new_input + "3"
         else:
             new_input = "3"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def four(self):
         global new_input
@@ -88,7 +115,7 @@ class PadButtons:
             new_input = new_input + "4"
         else:
             new_input = "4"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def five(self):
         global new_input
@@ -96,7 +123,7 @@ class PadButtons:
             new_input = new_input + "5"
         else:
             new_input = "5"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def six(self):
         global new_input
@@ -104,7 +131,7 @@ class PadButtons:
             new_input = new_input + "6"
         else:
             new_input = "6"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def seven(self):
         global new_input
@@ -112,7 +139,7 @@ class PadButtons:
             new_input = new_input + "7"
         else:
             new_input = "7"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def eight(self):
         global new_input
@@ -120,7 +147,7 @@ class PadButtons:
             new_input = new_input + "8"
         else:
             new_input = "8"
-        display.setText(new_input)
+        PadButtons.eval()
 
     def nine(self):
         global new_input
@@ -128,7 +155,7 @@ class PadButtons:
             new_input = new_input + "9"
         else:
             new_input = "9"
-        display.setText(new_input)
+        PadButtons.eval()
 
 class Page(QWidget):
 
@@ -136,8 +163,10 @@ class Page(QWidget):
         super(Page,self).__init__(parent)
 
         global display
+
         lab_layout = QVBoxLayout()
         lab_layout.addWidget(display)
+        lab_layout.addWidget(total)
         button_layout_l = QVBoxLayout()
         button_layout_r = QVBoxLayout()
         button_layout_b = QVBoxLayout()
@@ -159,7 +188,7 @@ class Page(QWidget):
         button_layout_pad_r.addWidget(PadButtons("9",PadButtons.nine).button)
         button_layout_pad_r.addWidget(PadButtons("6",PadButtons.six).button)
         button_layout_pad_r.addWidget(PadButtons("3",PadButtons.three).button)
-        button_layout_pad_r.addWidget(CalcButtons("",CalcButtons.no).button)
+        button_layout_pad_r.addWidget(CalcButtons(".",CalcButtons.point).button)
 
 
         plus_button = CalcButtons("+",CalcButtons.plus)
@@ -171,6 +200,7 @@ class Page(QWidget):
         div_button = CalcButtons("/",CalcButtons.div)
         button_layout_l.addWidget(div_button.button)
         button_layout_l.addWidget(CalcButtons("Clear",CalcButtons.clear).button)
+        button_layout_l.addWidget(CalcButtons("<-",CalcButtons.bksp).button)
         
         mainLayout = QGridLayout()
         mainLayout.addLayout(lab_layout, 0, 0)
