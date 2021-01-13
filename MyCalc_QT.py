@@ -64,6 +64,21 @@ class CalcButtons:
         new_input = new_input + "."
         display.setText(new_input)
 
+    def prime(self):
+        global display
+        global new_input
+        global total
+        n = PadButtons.eval()
+        display.setText('IsPrime('+new_input+')')       
+
+        try:
+            isinstance(n,int)
+        except AttributeError:
+            if not n.is_integer():
+                n = 0
+
+        total.setText(str(is_prime(n)))
+      
 class PadButtons:
 
     def __init__(self, symbol, call):
@@ -78,6 +93,10 @@ class PadButtons:
         except SyntaxError:
             print('SyntaxError with',new_input)
             CalcButtons.bksp()
+        except Exception as e:
+            print('Error with',new_input)
+            CalcButtons.clear()
+        return(eval(new_input))
 
     def zero(self):
         global new_input
@@ -202,6 +221,9 @@ class Page(QWidget):
         button_layout_l.addWidget(CalcButtons("Clear",CalcButtons.clear).button)
         button_layout_l.addWidget(CalcButtons("<-",CalcButtons.bksp).button)
         
+        prime_button = CalcButtons("IsPrime?",CalcButtons.prime)
+        button_layout_r.addWidget(prime_button.button)
+
         mainLayout = QGridLayout()
         mainLayout.addLayout(lab_layout, 0, 0)
 
@@ -210,10 +232,26 @@ class Page(QWidget):
         mainLayout.addLayout(button_layout_pad_r, 1, 2)
 
         mainLayout.addLayout(button_layout_l, 1, 3)
+        mainLayout.addLayout(button_layout_r, 1, 4)
 
         self.setLayout(mainLayout)
         self.setWindowTitle("My First Qt Calculator")
 
+def is_prime(n):
+    if n==0 or n == 2 or n == 3: return True
+    if n < 2 or n%2 == 0: return False
+    if n < 9: return True
+    if n%3 == 0: return False
+    r = int(n**0.5)
+    f = 5
+    while f <= r:
+        if n%f == 0:
+            return False
+        if n%(f+2) == 0:
+            return False
+            f+=6
+        
+        return True
 
 if __name__ == "__main__":
     import sys
